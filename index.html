@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Where the big cats came from and what their DNA reveals: origins, family tree, genomes, hybrids, coat genes, ancient DNA and conservation genetics.">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style><title>Big Cat Genomes</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a long-form field guide read like a genome browser — sticky track nav, banded "chromosome" rules between chapters, data set in mono. */
+:root{
+  --bg:#F2F3EE; --surface:#E7E9E1; --fg:#17201B; --muted:#56605A; --line:#C9CDC2;
+  --amber:#B45F0E; --amber-soft:#F3DDC3; --teal:#1E5D58; --teal-soft:#D3E5E1; --warn:#8A4B00;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#101614; --surface:#18201D; --fg:#E4E8E1; --muted:#9AA59E; --line:#2C3632;
+  --amber:#EE9C45; --amber-soft:#3A2814; --teal:#6CBDB3; --teal-soft:#16302D; --warn:#F2B35E; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#101614; --surface:#18201D; --fg:#E4E8E1; --muted:#9AA59E; --line:#2C3632;
+  --amber:#EE9C45; --amber-soft:#3A2814; --teal:#6CBDB3; --teal-soft:#16302D; --warn:#F2B35E; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg); color:var(--fg); font-family:var(--body); font-size:1.075rem; line-height:1.65;
+  padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px));}
+body::before{content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); z-index:10; background:var(--bg)}
+.wrap{max-width:1080px; margin:0 auto}
+.prose{max-width:68ch}
+h1,h2,h3{font-family:var(--display); line-height:1.1; text-wrap:balance; margin:0}
+h2{font-size:clamp(1.9rem,4vw,2.7rem); font-weight:800; letter-spacing:-.02em}
+h3{font-size:1.25rem; font-weight:700}
+p{margin:0}
+a{color:var(--teal); text-underline-offset:3px}
+a:focus-visible,button:focus-visible{outline:3px solid var(--amber); outline-offset:2px; border-radius:4px}
+.mono,code{font-family:var(--mono); font-size:.86em}
+i.g{font-family:var(--mono); font-style:italic; font-size:.9em; color:var(--amber)}
+.eyebrow{font-family:var(--mono); font-size:.78rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
+
+/* hero */
+header.hero{padding-block:3.5rem 2.5rem; display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); gap:2.5rem; align-items:center}
+.hero h1{font-size:clamp(2.6rem,7vw,5.2rem); font-weight:800; letter-spacing:-.035em}
+.hero h1 span{color:var(--amber)}
+.hero .lede{font-size:1.2rem; margin-top:1.2rem; color:var(--fg); max-width:46ch}
+.hero .meta{margin-top:1.2rem; color:var(--muted); font-size:.95rem}
+.karyo{background:var(--surface); border-radius:14px; padding:1.25rem 1rem .9rem}
+.karyo svg{width:100%; height:auto; display:block}
+.karyo figcaption{font-family:var(--mono); font-size:.74rem; color:var(--muted); margin-top:.6rem; line-height:1.5}
+
+.facts{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1px; background:var(--line); border-block:1px solid var(--line); margin-bottom:1rem}
+.facts div{background:var(--bg); padding:1rem .9rem}
+.facts b{display:block; font-family:var(--display); font-size:1.8rem; font-weight:800; font-variant-numeric:tabular-nums}
+.facts span{font-size:.9rem; color:var(--muted); line-height:1.4; display:block}
+
+/* nav */
+nav.tracks{position:sticky; top:env(safe-area-inset-top,0px); z-index:5; background:var(--bg); border-bottom:1px solid var(--line); margin-inline:calc(-1 * max(16px, env(safe-area-inset-left,0px)))}
+nav.tracks ul{list-style:none; margin:0 auto; padding:.55rem max(16px, env(safe-area-inset-right,0px)) .55rem max(16px, env(safe-area-inset-left,0px)); display:flex; gap:.35rem; overflow-x:auto; max-width:1112px; scrollbar-width:none}
+nav.tracks a{display:block; white-space:nowrap; font-family:var(--mono); font-size:.8rem; text-decoration:none; color:var(--muted); padding:.3rem .6rem; border-radius:999px}
+nav.tracks a:hover{color:var(--fg); background:var(--surface)}
+nav.tracks a.on{color:var(--bg); background:var(--fg)}
+
+/* sections */
+section{padding-block:3.5rem 1rem; scroll-margin-top:3.5rem}
+.band{height:10px; border-radius:5px; margin-bottom:1.6rem; background:repeating-linear-gradient(90deg,var(--fg) 0 14px,transparent 14px 20px,var(--amber) 20px 26px,transparent 26px 40px,var(--fg) 40px 44px,transparent 44px 58px); opacity:.85}
+.sec-head{display:grid; gap:.7rem; margin-bottom:1.8rem}
+.stack{display:grid; gap:1rem}
+.cols{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1.25rem}
+.cols3{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1.25rem}
+.card{background:var(--surface); border-radius:12px; padding:1.15rem 1.2rem; display:grid; gap:.55rem; align-content:start; min-width:0}
+.card p{font-size:.98rem}
+.card .src{font-family:var(--mono); font-size:.72rem; color:var(--muted); line-height:1.5}
+
+.flag{display:inline-block; font-family:var(--mono); font-size:.68rem; letter-spacing:.06em; text-transform:uppercase; padding:.08rem .45rem; border-radius:4px; background:var(--amber-soft); color:var(--warn); vertical-align:.12em; white-space:nowrap}
+.flag.ok{background:var(--teal-soft); color:var(--teal)}
+.note{border-left:3px solid var(--amber); padding:.2rem 0 .2rem 1rem; color:var(--muted); font-size:.97rem}
+
+/* tables */
+.tbl{overflow-x:auto; border:1px solid var(--line); border-radius:10px}
+table{border-collapse:collapse; width:100%; font-size:.92rem; min-width:640px}
+th,td{text-align:left; vertical-align:top; padding:.6rem .75rem; border-bottom:1px solid var(--line)}
+th{font-family:var(--mono); font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:500; background:var(--surface)}
+tr:last-child td{border-bottom:0}
+td.num{font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap}
+
+/* timeline */
+.timeline{list-style:none; margin:0; padding:0; display:grid; gap:0}
+.timeline li{display:grid; grid-template-columns:8.5rem 1fr; gap:1.1rem; padding:.85rem 0; border-top:1px solid var(--line)}
+.timeline .when{font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:.92rem; color:var(--amber); font-weight:500}
+.timeline .when small{display:block; color:var(--muted); font-weight:400; font-size:.74rem}
+.timeline .what{display:grid; gap:.2rem; min-width:0}
+.timeline .what .src{font-family:var(--mono); font-size:.72rem; color:var(--muted)}
+.tl-filter{display:flex; flex-wrap:wrap; gap:.4rem; margin-bottom:1rem}
+.chip{font-family:var(--mono); font-size:.78rem; border:1px solid var(--line); background:transparent; color:var(--fg); padding:.3rem .75rem; border-radius:999px; cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--fg); color:var(--bg); border-color:var(--fg)}
+.kind{font-family:var(--mono); font-size:.66rem; text-transform:uppercase; letter-spacing:.08em; color:var(--teal)}
+
+/* tree */
+.treebox{background:var(--surface); border-radius:14px; padding:1.2rem; display:grid; gap:1rem}
+.tree-tabs{display:flex; flex-wrap:wrap; gap:.4rem}
+#tree{width:100%; max-width:560px; height:auto}
+#tree .edge{stroke:var(--fg); stroke-width:2.2; fill:none}
+#tree .leaf{font-family:var(--display); font-weight:700; font-size:15px; fill:var(--fg)}
+#tree .sci{font-family:var(--mono); font-style:italic; font-size:11px; fill:var(--muted)}
+#tree .hl{stroke:var(--amber); stroke-width:3.4}
+.tree-cap{font-size:.98rem; max-width:62ch}
+
+ol.refs{columns:2; column-gap:2rem; font-size:.86rem; padding-left:1.3rem; margin:0}
+ol.refs li{break-inside:avoid; margin-bottom:.45rem}
+footer{padding-block:3rem 4rem; color:var(--muted); font-size:.92rem; border-top:1px solid var(--line); margin-top:3rem}
+
+@media (max-width:820px){
+  header.hero{grid-template-columns:1fr; padding-block:2.2rem 1.5rem}
+  .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cols,.cols3{grid-template-columns:1fr}
+  ol.refs{columns:1}
+  .timeline li{grid-template-columns:1fr; gap:.3rem}
+}
+@media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+<header class="hero">
+  <div>
+    <p class="eyebrow">Felidae · Pantherinae · DNA and origins</p>
+    <h1>The big cats, read from their <span>genomes</span></h1>
+    <p class="lede">Where lions, tigers, jaguars, leopards and snow leopards came from, how their family tree got tangled, and what their DNA says about stripes, spots, altitude and survival.</p>
+    <p class="meta">Compiled November 2026 from peer-reviewed papers. Contested findings are flagged <span class="flag">debated</span> and the open questions are listed at the end.</p>
+  </div>
+  <figure class="karyo" style="margin:0">
+    <svg id="karyo" viewBox="0 0 400 210" role="img" aria-label="Illustration of 19 chromosome pairs, the cat karyotype of 2n equals 38"></svg>
+    <figcaption>2n = 38 · 19 chromosome pairs, shared by tigers, lions and house cats. Banding is illustrative.</figcaption>
+  </figure>
+</header>
+
+<div class="facts">
+  <div><b>~2.4 Gb</b><span>Genome size of every big cat assembled so far</span></div>
+  <div><b>38</b><span>Chromosomes in Panthera, same layout as the domestic cat</span></div>
+  <div><b>10.8 Mya</b><span>Base of the living cat family (95% CI 8.4–14.5)</span></div>
+  <div><b>8</b><span>Major lineages of living cats; Panthera split off first</span></div>
+</div>
+</div>
+
+<nav class="tracks" aria-label="Sections">
+  <ul>
+    <li><a href="#origins">Origins</a></li>
+    <li><a href="#tree-sec">Family tree</a></li>
+    <li><a href="#genomes">Genomes</a></li>
+    <li><a href="#tangled">Hybrids</a></li>
+    <li><a href="#coats">Coats &amp; roars</a></li>
+    <li><a href="#ancient">Ancient DNA</a></li>
+    <li><a href="#conservation">Conservation</a></li>
+    <li><a href="#open">Open questions</a></li>
+    <li><a href="#refs">Sources</a></li>
+  </ul>
+</nav>
+
+<main class="wrap">
+
+<!-- ORIGINS -->
+<section id="origins">
+  <div class="band" aria-hidden="true"></div>
+  <div class="sec-head">
+    <p class="eyebrow">Chapter 1</p>
+    <h2>Out of Asia, mostly</h2>
+    <p class="prose">The cat family dates to the Oligocene. The oldest accepted felid, <i>Proailurus</i>, lived in Europe 25–31 million years ago. But every living cat descends from a much younger ancestor. A 2006 study using 22,789 base pairs of DNA and 16 fossil calibrations put the base of modern cats at about 10.8 million years ago, probably in Asia. The Panthera lineage was the first to branch off. Rising and falling sea levels then let cats cross between continents at least 10 times.</p>
+  </div>
+
+  <div class="tl-filter" role="group" aria-label="Filter timeline">
+    <button class="chip" id="f-all" aria-pressed="true" data-k="all">All events</button>
+    <button class="chip" id="f-dna" aria-pressed="false" data-k="dna">DNA estimates</button>
+    <button class="chip" id="f-fossil" aria-pressed="false" data-k="fossil">Fossils</button>
+    <button class="chip" id="f-move" aria-pressed="false" data-k="move">Migrations</button>
+  </div>
+  <ol class="timeline" id="timeline"></ol>
+  <p class="note" style="margin-top:1.2rem">Dates differ by up to three times depending on method. Dating that includes fossils directly (Tseng 2014) gives much older ages than molecular clocks anchored at a few nodes (Johnson 2006). Treat any single number as a midpoint in a wide range.</p>
+
+  <div class="cols" style="margin-top:2rem">
+    <div class="card">
+      <h3>The Tibetan fossil, and its demotion</h3>
+      <p><i>Panthera blytheae</i>, a skull from the Zanda Basin in Tibet dated 5.95–4.10 Mya, was described in 2014 as the oldest Panthera and a relative of the snow leopard. It became key evidence for an Asian origin. In 2023, Helmut Hemmer moved it to a new genus, <i>Palaeopanthera</i>, as a more distant relative. <span class="flag">debated</span></p>
+      <p class="src">Tseng et al. 2014 Proc R Soc B · Hemmer 2023</p>
+    </div>
+    <div class="card">
+      <h3>The Laetoli leopard that may be a puma</h3>
+      <p>Lion- and leopard-like fossils from Laetoli, Tanzania (3.6–3.8 Mya) were long used to calibrate big cat molecular clocks. A 2023 re-study named the lion-sized cat <i>Panthera principialis</i> and assigned the leopard-sized one to an early African <i>Puma</i>. If that holds, the oldest true leopard record is unknown. <span class="flag">debated</span></p>
+      <p class="src">Hemmer 2023 Palaeobiodiv Palaeoenv 103:465</p>
+    </div>
+    <div class="card">
+      <h3>Cheetahs and pumas aren't Panthera</h3>
+      <p>Both belong to the Felinae subfamily, in a lineage with the jaguarundi. The cheetah branched off about 4.9 Mya. DNA studies suggested cheetah ancestors moved from North America to the Old World, but no <i>Acinonyx</i> fossil has been found in North America. The oldest are from North Africa (about 2.5 Mya). <span class="flag">debated</span></p>
+      <p class="src">Johnson 2006 · Dobrynin 2015 · Faurby 2016</p>
+    </div>
+    <div class="card">
+      <h3>The "American cheetah" was a puma</h3>
+      <p><i>Miracinonyx</i> looked like a cheetah but ancient DNA places it next to the puma. Its sprinter's build evolved separately. Nuclear genomes published in 2026 date its split from the puma to about 2.6 Mya.</p>
+      <p class="src">Barnett 2005 Curr Biol · Cassatt-Johnstone et al. 2026 (press release)</p>
+    </div>
+  </div>
+</section>
+
+<!-- TREE -->
+<section id="tree-sec">
+  <div class="band" aria-hidden="true"></div>
+  <div class="sec-head">
+    <p class="eyebrow">Chapter 2</p>
+    <h2>A family tree that won't sit still</h2>
+    <p class="prose">The five Panthera species split from each other within a few million years. That was fast enough that in 2010 one team noted that no two molecular studies had produced the same tree. Whole genomes have settled one pairing: tiger and snow leopard are sisters. Whether the lion's closest relative is the leopard or the jaguar is still argued.</p>
+  </div>
+  <div class="treebox">
+    <div class="tree-tabs" role="group" aria-label="Choose a tree hypothesis">
+      <button class="chip" id="t-a" aria-pressed="true" data-t="a">Most common genome tree</button>
+      <button class="chip" id="t-b" aria-pressed="false" data-t="b">Low-recombination tree</button>
+    </div>
+    <svg id="tree" viewBox="0 0 520 300" role="img" aria-label="Panthera family tree"></svg>
+    <p class="tree-cap" id="tree-cap"></p>
+  </div>
+  <div class="cols" style="margin-top:1.5rem">
+    <div class="card">
+      <h3>Why genes disagree</h3>
+      <p><b>Incomplete lineage sorting.</b> When species split quickly, the ancestral population still carries several versions of many genes. Each daughter species keeps a random subset, so by chance a gene can match a more distant cousin. No hybridization is needed.</p>
+      <p><b>Introgression.</b> Hybrids backcross into a parent species and carry DNA across the species line. It leaves a lopsided excess of one conflicting tree and gene copies that are younger than the species split. Tests like ABBA-BABA look for exactly that signal.</p>
+    </div>
+    <div class="card">
+      <h3>The snow leopard's borrowed mitochondria</h3>
+      <p>Nuclear DNA puts the snow leopard next to the tiger. Its mitochondrial DNA, inherited only from mothers, groups instead with lion and leopard. A 2016 study of about 63,000 genome-wide markers concluded that an ancient hybrid between the snow leopard and lion/leopard lineages left behind a lion/leopard-type mitochondrion. Large blocks of the X chromosome show the same pattern.</p>
+      <p class="src">Li et al. 2016 Genome Research 26:1–11</p>
+    </div>
+  </div>
+</section>
+
+<!-- GENOMES -->
+<section id="genomes">
+  <div class="band" aria-hidden="true"></div>
+  <div class="sec-head">
+    <p class="eyebrow">Chapter 3</p>
+    <h2>Thirteen years of big cat genomes</h2>
+    <p class="prose">The first big cat genome, from a 9-year-old male Amur tiger in a Korean zoo, was published in 2013. Early assemblies were thousands of fragments. By 2026 a Sumatran tiger genome had 17 of its 19 chromosomes read end to end. Across all of them, one finding holds: big cat chromosomes have barely changed in 11–15 million years.</p>
+  </div>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Species</th><th>Year</th><th>Assembly</th><th>Headline finding</th><th>Paper</th></tr></thead>
+      <tbody>
+        <tr><td>Amur tiger (+ lion, white lion, snow leopard)</td><td class="num">2013</td><td class="num">2.4 Gb · N50 8.8 Mb</td><td>Muscle and carnivory gene signals; snow leopard altitude genes; white lion mutation</td><td>Cho et al., Nat Commun</td></tr>
+        <tr><td>Cheetah</td><td class="num">2015</td><td class="num">2.38 Gb · N50 3.1 Mb</td><td>About 95% homozygous; two ancient bottlenecks</td><td>Dobrynin et al., Genome Biol</td></tr>
+        <tr><td>Amur leopard</td><td class="num">2016</td><td class="num">2.58 Gb · N50 21.7 Mb</td><td>Cats lost starch-digestion and amylase genes</td><td>Kim et al., Genome Biol</td></tr>
+        <tr><td>Jaguar (+ leopard)</td><td class="num">2017</td><td class="num">2.4 Gb · N50 ~1.5 Mb</td><td>Ancient hybridization across Panthera</td><td>Figueiró et al., Sci Adv</td></tr>
+        <tr><td>Puma</td><td class="num">2019</td><td class="num">2.43 Gb · N50 100 Mb</td><td>Inbreeding in isolated North American pumas</td><td>Saremi et al., Nat Commun</td></tr>
+        <tr><td>Lion</td><td class="num">2020</td><td class="num">Chromosome-level</td><td>Gene order matches the house cat; Asiatic lions declined faster</td><td>Armstrong et al., BMC Biol</td></tr>
+        <tr><td>Tiger, snow leopard, African leopard</td><td class="num">2022</td><td class="num">N50 112–158 Mb</td><td>No large inversions relative to the house cat</td><td>Armstrong et al., G3</td></tr>
+        <tr><td>Clouded leopards (2 species)</td><td class="num">2022</td><td class="num">N50 147 Mb</td><td>The two species split about 5.1 Mya</td><td>Bursell et al., iScience</td></tr>
+        <tr><td>Lion and tiger halves of a liger</td><td class="num">2023</td><td class="num">Contig N50 74–104 Mb</td><td>Chromosome stasis; lions lost many scent-receptor genes</td><td>Bredemeyer et al., Nat Genet</td></tr>
+        <tr><td>Snow leopard (+ 52 wild)</td><td class="num">2025</td><td class="num">Chromosome-level</td><td>EPAS1 selection rises with elevation</td><td>Yang et al., Genome Biol</td></tr>
+        <tr><td>Sumatran tiger</td><td class="num">2026</td><td class="num">2.46 Gb · 55 contigs</td><td>17 of 19 chromosomes read telomere to telomere</td><td>Dean et al., BMC Genomics</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note" style="margin-top:.8rem">N50 is a measure of how continuous an assembly is: half the genome sits in pieces at least this long. Bigger is better.</p>
+
+  <h3 style="margin:2.2rem 0 1rem">What the genomes revealed</h3>
+  <div class="cols3">
+    <div class="card"><p class="kind">Diet</p><h3>Built for meat</h3><p>178 genes show positive selection in the tiger, enriched for muscle filament function (<i class="g">MYH7</i>, <i class="g">TPM4</i>). Cats have lost starch and sugar digestion genes, including the amylases, and <i class="g">GCKR</i> is broken in every cat examined.</p><p class="src">Cho 2013 · Kim 2016</p></div>
+    <div class="card"><p class="kind">Altitude</p><h3>Snow leopard oxygen</h3><p>Snow leopards carry a unique change in <i class="g">EGLN1</i> (Met39) and changes in <i class="g">EPAS1</i>, two genes in the body's low-oxygen response. Their hemoglobin is not specially adapted, so the adaptation likely works elsewhere.</p><p class="src">Cho 2013 · Janecka 2015 · Yang 2025</p></div>
+    <div class="card"><p class="kind">Bottleneck</p><h3>The cheetah's narrow past</h3><p>Two population crashes, more than 100,000 years ago and about 12,000 years ago, left cheetah genomes almost uniform. Fixed defects in the sperm gene <i class="g">AKAP4</i> may explain why over 80% of their sperm are misshapen.</p><p class="src">Dobrynin 2015</p></div>
+    <div class="card"><p class="kind">Skull</p><h3>Jaguar bite</h3><p>Jaguar-specific selection on <i class="g">ESRP1</i> and <i class="g">SSTR4</i>, which shape the skull. The authors link this to the jaguar's massive head and its diet of armored reptiles. <span class="flag">interpretation</span></p><p class="src">Figueiró 2017</p></div>
+    <div class="card"><p class="kind">Smell</p><h3>Solitary noses</h3><p>The solitary tiger has the largest working set of smell and pheromone receptor genes. In the social lion, 68% of one pheromone receptor family (<i class="g">V1R</i>) no longer works.</p><p class="src">Bredemeyer 2023</p></div>
+    <div class="card"><p class="kind">Karyotype</p><h3>Frozen chromosomes</h3><p>Cat genomes have very few duplicated segments (about 1–1.5%, versus about 7% in humans), which may explain why their chromosomes barely rearrange. Not all cats have 38: the ocelot lineage has 36 after a fusion.</p><p class="src">Bredemeyer 2023 · Armstrong 2022</p></div>
+  </div>
+</section>
+
+<!-- TANGLED -->
+<section id="tangled">
+  <div class="band" aria-hidden="true"></div>
+  <div class="sec-head">
+    <p class="eyebrow">Chapter 4</p>
+    <h2>Ancient hybrids and modern ligers</h2>
+    <p class="prose">Big cat species interbred long after they split. The lion lineage shows the most mixing, probably because its huge ancient range overlapped with every other species. Hybridization may even have been useful: two jaguar vision genes sit in regions borrowed from other species and also show signs of natural selection.</p>
+  </div>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Species pair</th><th>Evidence</th><th>Status</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>Lion/leopard ancestor → snow leopard</td><td>Mitochondrial capture; X-chromosome blocks; admixture tests</td><td><span class="flag ok">strong</span></td><td>Li 2016</td></tr>
+        <tr><td>Lion ↔ leopard</td><td>Pervasive gene flow in high-recombination regions; models reject a tree without it</td><td><span class="flag ok">strong</span></td><td>Santos 2025</td></tr>
+        <tr><td>Lion ↔ jaguar</td><td>Young X-linked divergence; dominant signal in low-recombination regions</td><td><span class="flag">debated</span></td><td>Figueiró 2017 · Li 2019</td></tr>
+        <tr><td>Into jaguar: <i class="g">DOCK3</i>, <i class="g">COL4A5</i></td><td>Introgression plus positive selection (optic nerve genes)</td><td><span class="flag">inferred</span></td><td>Figueiró 2017</td></tr>
+        <tr><td>Leopard ↔ extinct "ghost" lineage</td><td>Odd X-chromosome tree positions</td><td><span class="flag">speculative</span></td><td>Figueiró 2017</td></tr>
+        <tr><td>Lion × tiger (liger, tigon)</td><td>Captive only; a female liger bore a "liliger" cub in 2012</td><td><span class="flag ok">documented</span></td><td>Novosibirsk Zoo reports</td></tr>
+        <tr><td>Leopard × lion (leopon); jaguar × lion (jaglion)</td><td>Zoo and press records</td><td><span class="flag">anecdotal</span></td><td>Gray 1972; press reports</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="cols" style="margin-top:1.5rem">
+    <div class="card">
+      <h3>Why ligers are giants and tigons aren't</h3>
+      <p>Some genes are switched on only from the father's copy and push growth; others, from the mother's copy, hold it back. The leading idea is that lion fathers pass strong growth signals while tigress mothers pass weak brakes, so a liger gets an accelerator with no brakes. A tigon gets the reverse. The pattern is proven in deer mice but has never been measured in ligers. <span class="flag">hypothesis</span></p>
+      <p class="src">Vrana et al. 1998 Nat Genet (mice)</p>
+    </div>
+    <div class="card">
+      <h3>Sterile males, fertile females</h3>
+      <p>Hybrid big cats follow Haldane's rule: male hybrids are reported sterile, while females can sometimes breed. A 2023 study built separate lion and tiger genomes from a single liger and found that <i class="g">DXZ4</i>, a region of the X chromosome linked to hybrid male sterility in other cats, evolves faster than 99.5% of the genome.</p>
+      <p class="src">Bredemeyer et al. 2023 Nat Genet</p>
+    </div>
+    <div class="card">
+      <h3>One clouded leopard became two</h3>
+      <p>In 2006, two teams working independently, one with DNA and one with skulls and coat patterns, found that Bornean and Sumatran clouded leopards are a separate species, <i>Neofelis diardi</i>. Whole genomes later dated the split to about 5.1 Mya (3.8–6.5), older than the lion–leopard split.</p>
+      <p class="src">Buckley-Beason 2006 · Kitchener 2006 · Bursell 2022</p>
+    </div>
+    <div class="card">
+      <h3>The most common tree may be wrong</h3>
+      <p>Lion + leopard is the most frequent tree in the genome, but it is concentrated in regions where borrowed DNA survives best. A 2025 model-based study rejected it as the true species tree. It could not decide whether the jaguar's closest relative is the lion or the leopard.</p>
+      <p class="src">Li 2019 MBE · Santos 2025 Syst Biol</p>
+    </div>
+  </div>
+</section>
+
+<!-- COATS -->
+<section id="coats">
+  <div class="band" aria-hidden="true"></div>
+  <div class="sec-head">
+    <p class="eyebrow">Chapter 5</p>
+    <h2>Single letters that change a coat</h2>
+    <p class="prose">A "black panther" is not a species. It is a black leopard or black jaguar, and its spots are still there under the dark coat. Melanism has evolved at least four separate times in the cat family, through different mutations in the same pigment pathway.</p>
+  </div>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Trait</th><th>Species</th><th>Gene and change</th><th>Inheritance</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>Black coat</td><td>Jaguar</td><td><i class="g">MC1R</i> · 15-bp deletion</td><td>Dominant</td><td>Eizirik 2003</td></tr>
+        <tr><td>Black coat</td><td>Leopard</td><td><i class="g">ASIP</i> · C333A, stop at codon 111</td><td>Recessive</td><td>Schneider 2012</td></tr>
+        <tr><td>White coat</td><td>Tiger</td><td><i class="g">SLC45A2</i> · A477V</td><td>Recessive</td><td>Xu 2013</td></tr>
+        <tr><td>Golden "strawberry"</td><td>Tiger</td><td><i class="g">CORIN</i> · H587Y</td><td>Recessive</td><td>Xu 2017</td></tr>
+        <tr><td>Snow white (stripes nearly gone)</td><td>Tiger</td><td><i class="g">SLC45A2</i> + <i class="g">CORIN</i></td><td>Two copies of both</td><td>Xu 2017</td></tr>
+        <tr><td>White (leucistic)</td><td>Lion</td><td><i class="g">TYR</i> · R87Q</td><td>Probably recessive <span class="flag">not proven</span></td><td>Cho 2013</td></tr>
+        <tr><td>King pattern (blotches, stripes)</td><td>Cheetah</td><td><i class="g">Taqpep</i> / <i class="g">LVRN</i> · 1-bp insertion</td><td>Recessive</td><td>Kaelin 2012</td></tr>
+        <tr><td>Roaring</td><td>Lion, tiger, jaguar, leopard</td><td>No gene identified</td><td>n/a</td><td>Anatomy only</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="cols" style="margin-top:1.5rem">
+    <div class="card">
+      <h3>Why black leopards cluster in rainforests</h3>
+      <p>About 11% of leopards are black. They are concentrated in Asia's moist tropical forests and almost absent from open, dry country. On the Malay Peninsula nearly all leopards are black. Camera traps there needed special methods to tell individuals apart, because the spots are hard to see.</p>
+      <p class="src">da Silva et al. 2017 PLoS ONE</p>
+    </div>
+    <div class="card">
+      <h3>The roar is anatomy, not a known gene</h3>
+      <p>Lions, tigers and jaguars have large, square vocal folds with a fibroelastic pad, a lowered larynx, and an elastic ligament in place of one hyoid bone. Lion roars run about 40–200 Hz. Researchers no longer think the hyoid alone explains roaring, and no study has found genes for it. The snow leopard, a Panthera that doesn't roar, has intermediate vocal folds.</p>
+      <p class="src">Weissengruber 2002 J Anat · Klemuk 2011 PLoS ONE</p>
+    </div>
+  </div>
+</section>
+
+<!-- ANCIENT -->
+<section id="ancient">
+  <div class="band" aria-hidden="true"></div>
+  <div class="sec-head">
+    <p class="eyebrow">Chapter 6</p>
+    <h2>DNA from cats that are gone</h2>
+    <p class="prose">Permafrost, caves and museum drawers have yielded DNA from Ice Age lions, sabertooths and tigers hunted to extinction in the 20th century. The newest cave lion results, published in June 2026, overturn an earlier conclusion that cave lions and modern lions never interbred.</p>
+  </div>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Cat</th><th>Age</th><th>DNA recovered</th><th>Key finding</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>Cave lion <i>P. spelaea</i></td><td class="num">17 to &gt;100 ka</td><td>mtDNA → 12 nuclear genomes</td><td>Separate lineage, split about 1.7 Mya; repeated gene flow from modern lions (3–4% of some genomes) <span class="flag">debated</span></td><td>Stanton 2026 Cell</td></tr>
+        <tr><td>Frozen cubs Sparta and Boris</td><td class="num">~28 ka / ~43 ka</td><td>Sex ID; Sparta's genome</td><td>Different ages, so not siblings; thick undercoat</td><td>Boeskorov 2021 · Stanton 2026</td></tr>
+        <tr><td>American lion <i>P. atrox</i></td><td class="num">Late Pleistocene</td><td>mtDNA</td><td>Sister to the cave lion; isolated about 340 ka</td><td>Barnett 2009</td></tr>
+        <tr><td><i>Homotherium</i> (scimitar-tooth)</td><td class="num">&gt;47.5 ka</td><td>7× nuclear genome</td><td>Split from living cats about 22.5 Mya; high diversity; 31 selected genes</td><td>Barnett 2020 Curr Biol</td></tr>
+        <tr><td><i>Smilodon</i> (sabertooth)</td><td class="num">Late Pleistocene</td><td>Partial mitogenome</td><td>Outside all living cats; split from <i>Homotherium</i> about 18 Mya</td><td>Paijmans 2017</td></tr>
+        <tr><td>Barbary lion</td><td class="num">Museum</td><td>Genome</td><td>Closest to West African lions</td><td>de Manuel 2020</td></tr>
+        <tr><td>Caspian tiger</td><td class="num">Museum</td><td>mtDNA; 3 genomes</td><td>One letter away from the Amur tiger's mtDNA; arrived within the last ~10,000 years</td><td>Driscoll 2009 · Sun 2023</td></tr>
+        <tr><td>Javan and Bali tigers</td><td class="num">Museum</td><td>mtDNA</td><td>Closest living relative is the Sumatran tiger</td><td>Xue 2015</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note" style="margin-top:1rem">Sabertooths are not big cats in the Panthera sense. They belong to the extinct subfamily Machairodontinae, which split from all living cats more than 20 million years ago.</p>
+</section>
+
+<!-- CONSERVATION -->
+<section id="conservation">
+  <div class="band" aria-hidden="true"></div>
+  <div class="sec-head">
+    <p class="eyebrow">Chapter 7</p>
+    <h2>Genetics of survival</h2>
+    <p class="prose">DNA now shapes how big cats are counted, classified and protected. It decides how many tiger subspecies there are, which animals to move between populations, and where a seized tiger skin came from.</p>
+  </div>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Species</th><th>IUCN status</th><th>Wild population</th><th>Genetic concern</th></tr></thead>
+      <tbody>
+        <tr><td>Tiger</td><td>Endangered</td><td class="num">3,726–5,578 (2022)</td><td>Isolated Indian reserves; subspecies dispute</td></tr>
+        <tr><td>Lion</td><td>Vulnerable</td><td class="num">~22–25k Africa · 891 India (2025)</td><td>Asiatic lions have almost no genetic diversity</td></tr>
+        <tr><td>Leopard</td><td>Vulnerable (Amur: Critically Endangered)</td><td class="num">Amur ~84 (2014–15)</td><td>Amur leopard inbreeding</td></tr>
+        <tr><td>Jaguar</td><td>Near Threatened</td><td class="num">~173,000 (2018)</td><td>Habitat fragmentation</td></tr>
+        <tr><td>Snow leopard</td><td>Vulnerable</td><td class="num">~4,000–7,500</td><td>Very low heterozygosity</td></tr>
+        <tr><td>Cheetah</td><td>Vulnerable</td><td class="num">~7,100 (2017)</td><td>Extreme homozygosity; inbred Asiatic population</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note" style="margin-top:.8rem">Statuses were checked through assessor citations and zoo fact sheets, not the IUCN site directly. Population figures are the most recent published estimates found.</p>
+  <div class="cols" style="margin-top:1.5rem">
+    <div class="card">
+      <h3>Two tigers or six? <span class="flag">debated</span></h3>
+      <p>In 2017 the IUCN Cat Specialist Group cut tiger subspecies to two: mainland <i>P. t. tigris</i> and Sunda <i>P. t. sondaica</i>. A year later, 32 whole genomes split living tigers into six distinct groups (Bengal, Amur, South China, Sumatran, Indochinese, Malayan) sharing an ancestor about 110,000 years ago. The classification is under review.</p>
+      <p class="src">Kitchener 2017 Cat News · Liu 2018 Curr Biol</p>
+    </div>
+    <div class="card">
+      <h3>The cheetah debate</h3>
+      <p>In the 1980s, cheetahs accepted skin grafts from unrelated cheetahs, proof of near-identical immune genes. Genomes later found diversity up to 50 times lower than in house cats. But a Serengeti field study found predators, not genes, killed most cubs: about 6 of 125 reached independence. How much low diversity harms cheetahs is still argued.</p>
+      <p class="src">O'Brien 1985 Science · Caro &amp; Laurenson 1994 · Dobrynin 2015</p>
+    </div>
+    <div class="card">
+      <h3>Rescuing the Florida panther</h3>
+      <p>By the early 1990s, inbred Florida panthers had kinked tails, heart defects and undescended testicles, and models gave them a 95% chance of extinction. In 1995, eight female Texas pumas were released. The population roughly tripled, heterozygosity doubled, and the defects became rarer. Some harmful variants came in too, and ongoing management will likely be needed.</p>
+      <p class="src">Johnson et al. 2010 Science</p>
+    </div>
+    <div class="card">
+      <h3>Lions, split two ways</h3>
+      <p>Lions are now two subspecies: <i>P. l. leo</i> (West and Central Africa and India) and <i>P. l. melanochaita</i> (southern and eastern Africa). The two lineages split about 70,000 years ago. Gir's Asiatic lions grew from 674 in 2020 to 891 in 2025, but they carry almost no genetic variation.</p>
+      <p class="src">Kitchener 2017 · de Manuel 2020 PNAS · Gujarat census 2025</p>
+    </div>
+  </div>
+</section>
+
+<!-- OPEN -->
+<section id="open">
+  <div class="band" aria-hidden="true"></div>
+  <div class="sec-head">
+    <p class="eyebrow">Chapter 8</p>
+    <h2>What scientists still don't know</h2>
+  </div>
+  <div class="cols">
+    <div class="card"><h3>Who is the jaguar's closest relative?</h3><p>Lion or leopard. Genome-scale models in 2025 could not tell the two answers apart.</p></div>
+    <div class="card"><h3>How old is Panthera?</h3><p>Estimates of the five species' common ancestor range from 3.7 to 10.7 million years ago, depending on how fossils are used.</p></div>
+    <div class="card"><h3>Where did cheetahs come from?</h3><p>DNA hints at North America, but the fossils are all in Africa and Eurasia.</p></div>
+    <div class="card"><h3>When did the ancient hybridizations happen?</h3><p>None are dated yet. Dates depend on mutation rates, which were only recently measured from big cat pedigrees.</p></div>
+    <div class="card"><h3>Why are ligers so big?</h3><p>Genomic imprinting is the leading explanation, but it has never been tested in big cats.</p></div>
+    <div class="card"><h3>What genes make a roar?</h3><p>None are known. Roaring is explained only by the anatomy of the larynx and vocal folds.</p></div>
+  </div>
+</section>
+
+<!-- REFS -->
+<section id="refs">
+  <div class="band" aria-hidden="true"></div>
+  <div class="sec-head">
+    <p class="eyebrow">Sources</p>
+    <h2>Key papers</h2>
+    <p class="prose" style="color:var(--muted); font-size:.97rem">Five AI research agents gathered this material in November 2026 using web searches of the primary literature. Some figures, mostly from 2025–2026 papers, came from abstracts or press releases. Check the original paper before citing any number.</p>
+  </div>
+  <ol class="refs" id="reflist"></ol>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">Big Cat Genomes · compiled November 2026 · Species facts change as new genomes are published.</div>
+</footer>
+
+<script>
+// ---------- karyotype hero ----------
+(function(){
+  const svg=document.getElementById('karyo'); const NS='http://www.w3.org/2000/svg';
+  const lens=[96,92,90,84,80,76,74,70,68,64,62,58,56,52,48,46,42,40,34];
+  let seed=7; const rnd=()=>{seed=(seed*9301+49297)%233280; return seed/233280;};
+  const colW=400/19.2;
+  lens.forEach((L,i)=>{
+    for(let k=0;k<2;k++){
+      const x=6+i*colW+k*7.2, y=180-L*1.65, h=L*1.65;
+      const g=document.createElementNS(NS,'g');
+      const base=document.createElementNS(NS,'rect');
+      base.setAttribute('x',x);base.setAttribute('y',y);base.setAttribute('width',6);base.setAttribute('height',h);base.setAttribute('rx',3);
+      base.setAttribute('style','fill:var(--line)');g.appendChild(base);
+      let yy=y+4; seed=i*31+11;
+      while(yy<y+h-5){ const bh=2+rnd()*6; const dark=rnd()>.45;
+        if(dark){const b=document.createElementNS(NS,'rect');b.setAttribute('x',x);b.setAttribute('y',yy);b.setAttribute('width',6);b.setAttribute('height',bh);
+          b.setAttribute('style', rnd()>.8?'fill:var(--amber)':'fill:var(--fg)'); g.appendChild(b);}
+        yy+=bh+1+rnd()*5; }
+      const cen=document.createElementNS(NS,'rect'); cen.setAttribute('x',x-.5);cen.setAttribute('y',y+h*(.3+((i*7)%4)/10));cen.setAttribute('width',7);cen.setAttribute('height',1.6);cen.setAttribute('style','fill:var(--bg)');g.appendChild(cen);
+      svg.appendChild(g);
+    }
+    const t=document.createElementNS(NS,'text'); t.setAttribute('x',6+i*colW+6.5); t.setAttribute('y',198); t.setAttribute('text-anchor','middle');
+    t.setAttribute('style','font:9px var(--mono);fill:var(--muted)'); t.textContent= i<18 ? (i+1) : 'X'; svg.appendChild(t);
+  });
+})();
+
+// ---------- timeline ----------
+const events=[
+ ['25–31','','fossil','Proailurus, the oldest accepted cat, lives in Europe.','Rothwell 2003 (Johnson 2006 puts the family origin near 35 Mya)'],
+ ['18.5–20','','move','Pseudaelurus reaches North America across Beringia.','Rothwell 2003'],
+ ['10.8','8.4–14.5','dna','Base of all living cats. The Panthera lineage branches off first. Fossil-tip dating gives 16.4 Mya.','Johnson 2006 · Tseng 2014'],
+ ['9–6','','fossil','Pachypanthera, Thailand: possibly the oldest pantherine (no phylogenetic test yet).','de Bonis 2023'],
+ ['8.5–8.0','Li 2016: ~5.9','move','Ancestors of the ocelot, lynx, puma, leopard cat and domestic cat cross Beringia into North America during low sea levels.','Johnson 2006 · Li 2016'],
+ ['6.4','4.5–9.3','dna','Clouded leopards split from Panthera.','Johnson 2006 · Yuan 2023'],
+ ['5.95–4.10','','fossil','Panthera blytheae lives in Tibet. Its genus is now disputed.','Tseng 2014 · Hemmer 2023'],
+ ['5.1','3.8–6.5','dna','Mainland and Sunda clouded leopards split (older estimates were 1.4–2.9).','Bursell 2022'],
+ ['4.9','3.9–6.9','dna','The cheetah splits from the puma and jaguarundi.','Johnson 2006'],
+ ['3.7','2.4–5.8 (Tseng: 10.7)','dna','Common ancestor of the five living Panthera species.','Johnson 2006 · Tseng 2014'],
+ ['3.6–3.8','','fossil','Laetoli, Tanzania: lion-sized Panthera principialis, and a leopard-sized cat now argued to be a puma.','Hemmer 2023'],
+ ['~2–3','','dna','Tiger and snow leopard separate; lion, leopard and jaguar diversify.','Johnson 2006'],
+ ['2.7','','move','The Panama land bridge forms; cats spread into South America.','Johnson 2006'],
+ ['2.6','','dna','The "American cheetah" Miracinonyx splits from the puma.','Cassatt-Johnstone 2026'],
+ ['2.55–2.16','','fossil','Panthera zdanskyi, a tiger-lineage skull from Gansu, China.','Mazák 2011'],
+ ['1.6–1.2','','move','Lynxes return to Eurasia.','Johnson 2006'],
+ ['0.5–1.9','','dna','Cave lions split from modern lions. Estimates depend on whether gene flow is modeled.','de Manuel 2020 · Stanton 2020, 2026'],
+ ['0.85–1.5','','fossil','Earliest jaguars in North America.','Florida Museum'],
+ ['0.5–0.6','','move','Asian leopards descend from a single dispersal out of Africa.','Paijmans 2021'],
+ ['0.34','','move','The American lion becomes isolated from Beringian cave lions.','Barnett 2009'],
+ ['0.11','','dna','Living tigers share a common ancestor after a population bottleneck.','Liu 2018'],
+ ['0.012','','dna','The cheetah\'s second bottleneck, about 11,000–12,600 years ago.','Dobrynin 2015']
+];
+const kindName={dna:'DNA estimate',fossil:'Fossil',move:'Migration'};
+const tl=document.getElementById('timeline');
+function renderTL(k){
+  tl.innerHTML='';
+  events.filter(e=>k==='all'||e[2]===k).forEach(e=>{
+    const li=document.createElement('li');
+    li.innerHTML=`<div class="when">${e[0]} Mya${e[1]?`<small>range ${e[1]}</small>`:''}</div>
+      <div class="what"><span class="kind">${kindName[e[2]]}</span><span>${e[3]}</span><span class="src">${e[4]}</span></div>`;
+    tl.appendChild(li);
+  });
+}
+renderTL('all');
+document.querySelectorAll('.tl-filter .chip').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.tl-filter .chip').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  renderTL(b.dataset.k);
+}));
+
+// ---------- tree ----------
+const sci={'Clouded leopard':'Neofelis','Tiger':'P. tigris','Snow leopard':'P. uncia','Jaguar':'P. onca','Lion':'P. leo','Leopard':'P. pardus'};
+const trees={
+  a:{t:['Clouded leopard',[['Tiger','Snow leopard'],['Jaguar',['Lion','Leopard']]]], hl:['Lion','Leopard'],
+     cap:'Lion and leopard as sisters. This is the most frequent tree across the genome, found in 64% of genomic windows (Figueiró et al. 2017), and it matched Davis et al. 2010. Later work found it concentrates where borrowed DNA survives best, so it may reflect lion–leopard hybridization rather than true kinship.'},
+  b:{t:['Clouded leopard',[['Tiger','Snow leopard'],['Leopard',['Lion','Jaguar']]]], hl:['Lion','Jaguar'],
+     cap:'Lion and jaguar as sisters. Regions of the X chromosome with low recombination, which resist borrowed DNA, favor this tree (Li et al. 2019). Johnson et al. 2006 also found it. A 2025 analysis could not tell this tree apart from a jaguar + leopard pairing.'}
+};
+function drawTree(key){
+  const svg=document.getElementById('tree'); const NS='http://www.w3.org/2000/svg'; svg.innerHTML='';
+  const T=trees[key]; let leafI=0; const step=46, xLeaf=330, unit=62;
+  function height(n){return Array.isArray(n)?1+Math.max(...n.map(height)):0;}
+  function lay(n){
+    if(!Array.isArray(n)){const y=26+leafI*step; leafI++; return {x:xLeaf,y,name:n,leaves:[n]};}
+    const kids=n.map(lay); const x=xLeaf-height(n)*unit;
+    const y=(kids[0].y+kids[kids.length-1].y)/2;
+    return {x,y,kids,leaves:kids.flatMap(k=>k.leaves)};
+  }
+  const root=lay(T.t);
+  const hlSet=T.hl;
+  function isHL(node){return node.leaves.every(l=>hlSet.includes(l)) && node.leaves.length<=2;}
+  function line(d,cls){const p=document.createElementNS(NS,'path');p.setAttribute('d',d);p.setAttribute('class',cls);svg.appendChild(p);}
+  function draw(n){
+    if(!n.kids){
+      const t=document.createElementNS(NS,'text');t.setAttribute('x',n.x+10);t.setAttribute('y',n.y+5);t.setAttribute('class','leaf');t.textContent=n.name;svg.appendChild(t);
+      const s=document.createElementNS(NS,'text');s.setAttribute('x',n.x+10);s.setAttribute('y',n.y+19);s.setAttribute('class','sci');s.textContent=sci[n.name];svg.appendChild(s);
+      return;}
+    const hl=isHL(n);
+    line(`M${n.x} ${n.kids[0].y} V${n.kids[n.kids.length-1].y}`,'edge'+(hl?' hl':''));
+    n.kids.forEach(k=>{line(`M${n.x} ${k.y} H${k.x}`,'edge'+(hl?' hl':'')); draw(k);});
+  }
+  line(`M${root.x-24} ${root.y} H${root.x}`,'edge');
+  draw(root);
+  document.getElementById('tree-cap').textContent=T.cap;
+}
+drawTree('a');
+document.querySelectorAll('.tree-tabs .chip').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.tree-tabs .chip').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  drawTree(b.dataset.t);
+}));
+
+// ---------- references ----------
+const refs=[
+ ['Johnson et al. 2006. The late Miocene radiation of modern Felidae. Science 311:73','10.1126/science.1122277'],
+ ['Davis, Li & Murphy 2010. Supermatrix and species tree methods resolve phylogenetic relationships within the big cats. Mol Phylogenet Evol 56:64','10.1016/j.ympev.2010.01.036'],
+ ['Tseng et al. 2014. Himalayan fossils of the oldest known pantherine. Proc R Soc B 281:20132686','10.1098/rspb.2013.2686'],
+ ['Li et al. 2016. Phylogenomic evidence for ancient hybridization in the genomes of living cats. Genome Res 26:1','10.1101/gr.186668.114'],
+ ['Figueiró et al. 2017. Genome-wide signatures of complex introgression and adaptive evolution in the big cats. Sci Adv 3:e1700299','10.1126/sciadv.1700299'],
+ ['Li et al. 2019. Recombination-aware phylogenomics reveals the structured genomic landscape of hybridizing cat species. Mol Biol Evol 36:2111','10.1093/molbev/msz139'],
+ ['Santos et al. 2025. Phylogenomic analysis of Panthera with the multispecies coalescent with introgression. Syst Biol','10.1093/sysbio/syaf021'],
+ ['Cho et al. 2013. The tiger genome and comparative analysis with lion and snow leopard genomes. Nat Commun 4:2433','10.1038/ncomms3433'],
+ ['Dobrynin et al. 2015. Genomic legacy of the African cheetah. Genome Biol 16:277','10.1186/s13059-015-0837-4'],
+ ['Kim et al. 2016. The genome of the Amur leopard. Genome Biol 17:211','10.1186/s13059-016-1071-4'],
+ ['Saremi et al. 2019. Puma genomes from North and South America. Nat Commun 10:4769','10.1038/s41467-019-12741-1'],
+ ['Armstrong et al. 2022. Chromosome-level assemblies of tiger, snow leopard and leopard. G3 12:jkac277','10.1093/g3journal/jkac277'],
+ ['Bursell et al. 2022. Whole genome analysis of clouded leopard species. iScience 25:105647','10.1016/j.isci.2022.105647'],
+ ['Bredemeyer et al. 2023. Single-haplotype comparative genomics of felid hybrids. Nat Genet 55:1953','10.1038/s41588-023-01548-y'],
+ ['Yang et al. 2025. Snow leopard genomics and high-altitude adaptation. Genome Biol 26:94','10.1186/s13059-025-03555-0'],
+ ['Dean et al. 2026. A near telomere-to-telomere Sumatran tiger genome. BMC Genomics 27:339','10.1186/s12864-026-12703-0'],
+ ['Eizirik et al. 2003. Molecular genetics and evolution of melanism in the cat family. Curr Biol 13:448','10.1016/S0960-9822(03)00128-3'],
+ ['Schneider et al. 2012. How the leopard hides its spots: ASIP mutations and melanism. PLoS ONE 7:e50386','10.1371/journal.pone.0050386'],
+ ['Xu et al. 2013. The genetic basis of white tigers. Curr Biol 23:1031','10.1016/j.cub.2013.04.054'],
+ ['Xu et al. 2017. Genetic basis of golden tabby tigers. Cell Res 27:954','10.1038/cr.2017.32'],
+ ['Kaelin et al. 2012. Specifying and sustaining pigmentation patterns in domestic and wild cats. Science 337:1536','10.1126/science.1220893'],
+ ['Weissengruber et al. 2002. Hyoid apparatus and pharynx in the lion, jaguar, tiger, cheetah and domestic cat. J Anat 201:195','10.1046/j.1469-7580.2002.00088.x'],
+ ['Klemuk et al. 2011. Adapted to roar: functional morphology of tiger and lion vocal folds. PLoS ONE 6:e27029','10.1371/journal.pone.0027029'],
+ ['Barnett et al. 2009. Phylogeography of lions based on ancient DNA. Mol Ecol 18:1668','10.1111/j.1365-294X.2009.04134.x'],
+ ['de Manuel et al. 2020. The evolutionary history of extinct and living lions. PNAS 117:10927','10.1073/pnas.1919423117'],
+ ['Stanton et al. 2026. Ancient genomes of the cave lion. Cell','10.1016/j.cell.2026.05.007'],
+ ['Paijmans et al. 2017. Evolutionary history of saber-toothed cats based on ancient mitogenomics. Curr Biol 27:3330','10.1016/j.cub.2017.09.033'],
+ ['Barnett et al. 2020. Genomic adaptations and evolutionary history of the extinct scimitar-toothed cat. Curr Biol 30:5018','10.1016/j.cub.2020.09.051'],
+ ['Barnett et al. 2005. Evolution of the extinct sabretooths and the American cheetah-like cat. Curr Biol 15:R589','10.1016/j.cub.2005.07.052'],
+ ['Driscoll et al. 2009. Mitochondrial phylogeography illuminates the origin of the extinct Caspian tiger. PLoS ONE 4:e4125','10.1371/journal.pone.0004125'],
+ ['Sun et al. 2023. Ancient and museum tiger genomes. Nat Ecol Evol 7:1914','10.1038/s41559-023-02185-8'],
+ ['Liu et al. 2018. Genome-wide evolutionary analysis of natural history and adaptation in the world\'s tigers. Curr Biol 28:3840','10.1016/j.cub.2018.09.019'],
+ ['Paijmans et al. 2021. African and Asian leopards are highly differentiated at the genomic level. Curr Biol 31:1872','10.1016/j.cub.2021.03.084'],
+ ['Johnson et al. 2010. Genetic restoration of the Florida panther. Science 329:1641','10.1126/science.1192891'],
+ ['O\'Brien et al. 1985. Genetic basis for species vulnerability in the cheetah. Science 227:1428','10.1126/science.2983425'],
+ ['Buckley-Beason et al. 2006. Molecular evidence for species-level distinctions in clouded leopards. Curr Biol 16:2371','10.1016/j.cub.2006.08.066'],
+ ['Kitchener, Beaumont & Richardson 2006. Geographical variation in the clouded leopard. Curr Biol 16:2377','10.1016/j.cub.2006.10.066']
+];
+const rl=document.getElementById('reflist');
+refs.forEach(([t,doi])=>{const li=document.createElement('li');li.innerHTML=`${t}. <a href="https://doi.org/${doi}" target="_blank" rel="noopener">doi:${doi}</a>`;rl.appendChild(li);});
+
+// ---------- nav highlight ----------
+const links=[...document.querySelectorAll('nav.tracks a')];
+const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+if('IntersectionObserver' in window){
+  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id));}})},{rootMargin:'-40% 0px -55% 0px'});
+  secs.forEach(s=>s&&io.observe(s));
+}
+</script>
+
+</body>
+</html>
+
