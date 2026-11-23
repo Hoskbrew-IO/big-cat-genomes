@@ -7,3 +7,10 @@ A one-page science site about the DNA and origins of the big cats: lions, tigers
 Researched in November 2026 from the primary literature. Some 2025–2026 figures came from abstracts or press releases; check the original paper before citing a number.
 
 Plain HTML, CSS and JavaScript with no build step. Open `index.html` or view it on GitHub Pages.
+
+## Material 3 edition
+
+A second copy themed with [Material Design 3](https://m3.material.io/) lives in [`material/`](material/): M3 color roles generated from a seed color with Google's material-color-utilities, the Roboto type scale, M3 shapes, filter chips, segmented buttons and cards. Pick from five big-cat seed colors and light, dark or automatic mode.
+
+Live: https://brentgamble-create.github.io/big-cat-genomes/material/
+
