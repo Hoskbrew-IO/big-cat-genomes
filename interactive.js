@@ -23,14 +23,14 @@ const css=`
 
 .ix-dt{margin-bottom:20px}
 .ix-dt-scroll{overflow-x:auto}
-.ix-dt svg{width:100%;min-width:640px;height:auto;display:block}
+.ix-dt svg{width:100%;height:auto;display:block}.ix-dt svg.wide{min-width:640px}.ix-dt svg.tall{max-width:440px;margin:0 auto}
 .ix-dt .ax{stroke:var(--line);stroke-width:1}
 .ix-dt .tk{font-family:var(--mono);font-size:11px;fill:var(--muted)}
 .ix-dt .rl{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.06em}
 .ix-dt .ev{cursor:pointer;outline:none}
 .ix-dt .ev .bar{stroke-width:4;stroke-linecap:round;opacity:.45}
-.ix-dt .ev circle{stroke:var(--bg);stroke-width:2}
-.ix-dt .ev:hover circle,.ix-dt .ev:focus circle,.ix-dt .ev.on circle{r:9;stroke:var(--fg)}
+.ix-dt .ev circle:not(.hit){stroke:var(--bg);stroke-width:2}.ix-dt .ev .hit{fill:transparent;stroke:none}
+.ix-dt .ev:hover circle:not(.hit),.ix-dt .ev:focus circle:not(.hit),.ix-dt .ev.on circle:not(.hit){r:10;stroke:var(--fg)}
 .ix-dt .c-dna{fill:var(--amber);stroke:var(--amber)} .ix-dt .c-fossil{fill:var(--teal);stroke:var(--teal)} .ix-dt .c-move{fill:var(--fg);stroke:var(--fg)}
 .ix-dt-detail{margin-top:10px;min-height:5.2em}
 .ix-dt-detail .when{font-family:var(--mono);color:var(--amber);font-weight:500}
@@ -66,7 +66,36 @@ const css=`
 .ix-q .why{font-size:.95rem}
 .ix-q .why[hidden]{display:none}
 .ix-score{display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-family:var(--mono);font-size:.9rem}
-#tree text{cursor:pointer}
+/* ---- phones ---- */
+@media (max-width:600px){
+  .tbl{border:0;overflow:visible;background:transparent}
+  .tbl table,.tbl tbody{display:block;min-width:0}
+  .tbl thead{display:none}
+  .tbl tr{display:grid;gap:6px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;margin-bottom:10px;background:var(--surface)}
+  .tbl td{display:grid;grid-template-columns:6.6em minmax(0,1fr);gap:10px;border:0!important;padding:0;font-size:.95rem}
+  .tbl td::before{content:attr(data-label);font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-top:.25em}
+  .tbl td:first-child{display:block;font-weight:600;font-size:1.02rem}
+  .tbl td:first-child::before{content:none}
+  .tbl td.num{white-space:normal}
+  .flag{font-size:12px!important;height:auto!important;padding-block:1px!important}
+  .kind,.eyebrow{font-size:12px!important}
+  .ix-stats small,.ix-lists h4{font-size:11.5px}
+  #tree .leaf{font-size:18px}
+  #tree .sci{font-size:13px}
+  .ix-dt-detail{min-height:0}
+  section{padding-block:2.4rem .5rem!important}
+}
+@media (max-width:600px),(pointer:coarse){
+  .chip{min-height:40px}
+  .seed{width:40px!important;height:40px!important}
+  nav.tracks a{padding-top:12px!important;padding-bottom:12px!important}
+  .ix-jump a{display:inline-block;padding:8px 0}
+  ol.refs a{display:inline-block;padding:4px 0}
+  .ix-breed select{min-height:44px}
+}
+@media (max-width:820px){
+  nav.tracks ul{-webkit-mask-image:linear-gradient(90deg,#000 82%,transparent);mask-image:linear-gradient(90deg,#000 82%,transparent);padding-right:48px!important}
+}#tree text{cursor:pointer}
 #tree text:hover{text-decoration:underline}
 .ix-tip{font-family:var(--mono);font-size:.75rem;color:var(--muted)}
 @media (max-width:820px){.ix-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.ix-lists{grid-template-columns:1fr}.ix-punnett{grid-template-columns:auto 1fr 1fr}}
@@ -176,54 +205,72 @@ if(treeSvg && spHost){
   if(cap) cap.insertAdjacentElement('afterend', el('p',{class:'ix-tip'},'Click a cat’s name to open it in Meet the cats.'));
 }
 
-/* ---------- 2. Deep-time chart ---------- */
+/* ---------- 2. Deep-time chart (horizontal on wide screens, vertical on phones) ---------- */
 const dtHost=document.getElementById('ix-deeptime');
 let EV=[]; try{ EV=events; }catch(e){ EV=[]; }
 if(dtHost && EV.length){
   const parse=s=>{const m=String(s).replace(/~/g,'').match(/[\d.]+/g); return m?m.map(Number):null;};
-  const rows={dna:{y:58,label:'DNA',cls:'c-dna'},fossil:{y:112,label:'FOSSIL',cls:'c-fossil'},move:{y:166,label:'MIGRATION',cls:'c-move'}};
-  const W=1000,H=228,L=104,R=24,minA=0.006,maxA=40;
-  const lg=Math.log10, x=a=>L+(1-(lg(a)-lg(minA))/(lg(maxA)-lg(minA)))*(W-L-R);
-  const NS='http://www.w3.org/2000/svg';
-  const svg=document.createElementNS(NS,'svg'); svg.setAttribute('viewBox',`0 0 ${W} ${H}`); svg.setAttribute('role','group'); svg.setAttribute('aria-label','Events on a logarithmic deep-time scale');
+  const CAT={dna:{label:'DNA',cls:'c-dna'},fossil:{label:'FOSSIL',cls:'c-fossil'},move:{label:'MIGRATION',cls:'c-move'}};
+  const ORDER=['dna','fossil','move'];
+  const NS='http://www.w3.org/2000/svg', minA=0.006, maxA=40, lg=Math.log10;
   const mk=(t,a)=>{const n=document.createElementNS(NS,t); for(const k in a) n.setAttribute(k,a[k]); return n;};
-  [[0.01,'10,000 yrs'],[0.1,'100,000 yrs'],[1,'1 million'],[10,'10 million']].forEach(([a,l])=>{
-    svg.appendChild(mk('line',{x1:x(a),x2:x(a),y1:28,y2:190,class:'ax','stroke-dasharray':'3 4'}));
-    const t=mk('text',{x:x(a),y:212,'text-anchor':'middle',class:'tk'}); t.textContent=l; svg.appendChild(t);
-  });
-  const older=mk('text',{x:L,y:18,class:'tk'}); older.textContent='← older'; svg.appendChild(older);
-  const newer=mk('text',{x:W-R,y:18,'text-anchor':'end',class:'tk'}); newer.textContent='more recent →'; svg.appendChild(newer);
-  Object.values(rows).forEach(r=>{
-    svg.appendChild(mk('line',{x1:L,x2:W-R,y1:r.y,y2:r.y,class:'ax'}));
-    const t=mk('text',{x:8,y:r.y+4,class:'rl '+r.cls}); t.style.stroke='none'; t.textContent=r.label; svg.appendChild(t);
-  });
+  const TICKS=[[0.01,'10,000 yrs'],[0.1,'100,000 yrs'],[1,'1 million'],[10,'10 million']];
+  const tip=el('p',{class:'ix-tip'});
+  const sc=el('div',{class:'ix-dt-scroll'});
+  const legend=el('div',{class:'ix-legend'},'<span><i style="background:var(--amber)"></i>DNA estimate</span><span><i style="background:var(--teal)"></i>Fossil</span><span><i style="background:var(--fg)"></i>Migration</span>');
   const detail=el('div',{class:'card ix-dt-detail','aria-live':'polite'});
-  const nodes=[];
+  dtHost.className='ix-dt'; dtHost.append(tip,sc,legend,detail);
+  let nodes=[], current=Math.max(0,EV.findIndex(e=>e[0]==='10.8')), mode='';
   function show(i){
-    const e=EV[i]; nodes.forEach((n,j)=>n.classList.toggle('on',j===i));
+    current=i; const e=EV[i]; nodes.forEach((n,j)=>n&&n.classList.toggle('on',j===i));
     detail.innerHTML=`<p><span class="when">${esc(e[0])} Mya</span>${e[1]?` <span class="src">range ${esc(e[1])}</span>`:''} · <span class="kind">${({dna:'DNA estimate',fossil:'Fossil',move:'Migration'})[e[2]]}</span></p><p>${esc(e[3])}</p><p class="src">${esc(e[4])}</p>`;
   }
-  const count={dna:0,fossil:0,move:0};
-  EV.forEach((e,i)=>{
-    const v=parse(e[0]); if(!v) return;
-    const r=rows[e[2]]; const lo=Math.min(...v), hi=Math.max(...v);
-    let rlo=lo, rhi=hi; const rr=e[1]&&/^[\d.]+–[\d.]+$/.test(e[1])?parse(e[1]):null; if(rr){rlo=Math.min(rlo,rr[0]);rhi=Math.max(rhi,rr[1]);}
-    const mid=Math.sqrt(lo*hi); const jy=r.y+((count[e[2]]++%3)-1)*9;
-    const g=mk('g',{class:'ev '+r.cls,tabindex:'0',role:'button','aria-label':`${e[0]} million years ago: ${e[3]}`});
-    if(rhi>rlo) g.appendChild(mk('line',{x1:x(rhi),x2:x(rlo),y1:jy,y2:jy,class:'bar'}));
-    g.appendChild(mk('circle',{cx:x(mid),cy:jy,r:6}));
+  function addPoint(svg,i,e,pos,cls){
+    const g=mk('g',{class:'ev '+cls,tabindex:'0',role:'button','aria-label':`${e[0]} million years ago: ${e[3]}`});
+    if(pos.bar) g.appendChild(mk('line',Object.assign({class:'bar'},pos.bar)));
+    g.appendChild(mk('circle',{cx:pos.cx,cy:pos.cy,r:pos.r}));
+    g.appendChild(mk('circle',{cx:pos.cx,cy:pos.cy,r:pos.hit,class:'hit'}));
     const go=()=>show(i);
     g.addEventListener('click',go); g.addEventListener('mouseenter',go); g.addEventListener('focus',go);
     g.addEventListener('keydown',k=>{if(k.key==='Enter'||k.key===' '){k.preventDefault();go();}});
     svg.appendChild(g); nodes[i]=g;
-  });
-  const sc=el('div',{class:'ix-dt-scroll'}); sc.appendChild(svg);
-  dtHost.className='ix-dt';
-  dtHost.appendChild(el('p',{class:'ix-tip'},'Hover over or tap a point. The scale is logarithmic: each gridline is ten times older than the one to its right. Bars show the published range.'));
-  dtHost.appendChild(sc);
-  dtHost.appendChild(el('div',{class:'ix-legend'},'<span><i style="background:var(--amber)"></i>DNA estimate</span><span><i style="background:var(--teal)"></i>Fossil</span><span><i style="background:var(--fg)"></i>Migration</span>'));
-  dtHost.appendChild(detail);
-  show(EV.findIndex(e=>e[0]==='10.8')>=0?EV.findIndex(e=>e[0]==='10.8'):0);
+  }
+  function spans(e){
+    const v=parse(e[0]); if(!v) return null; let lo=Math.min(...v), hi=Math.max(...v);
+    const rr=e[1]&&/^[\d.]+–[\d.]+$/.test(e[1])?parse(e[1]):null; let rlo=lo,rhi=hi; if(rr){rlo=Math.min(rlo,rr[0]);rhi=Math.max(rhi,rr[1]);}
+    return {mid:Math.sqrt(lo*hi),rlo,rhi};
+  }
+  function build(){
+    const vertical=dtHost.clientWidth<560; const m=vertical?'v':'h'; if(m===mode) return; mode=m;
+    sc.innerHTML=''; nodes=[];
+    const svg=document.createElementNS(NS,'svg'); svg.setAttribute('role','group'); svg.setAttribute('aria-label','Events on a logarithmic deep-time scale');
+    const count={dna:0,fossil:0,move:0};
+    if(!vertical){
+      const W=1000,H=228,L=104,R=24, x=a=>L+(1-(lg(a)-lg(minA))/(lg(maxA)-lg(minA)))*(W-L-R);
+      svg.setAttribute('viewBox',`0 0 ${W} ${H}`); svg.classList.add('wide');
+      TICKS.forEach(([a,l])=>{svg.appendChild(mk('line',{x1:x(a),x2:x(a),y1:28,y2:190,class:'ax','stroke-dasharray':'3 4'})); const t=mk('text',{x:x(a),y:212,'text-anchor':'middle',class:'tk'}); t.textContent=l; svg.appendChild(t);});
+      const o=mk('text',{x:L,y:18,class:'tk'}); o.textContent='← older'; svg.appendChild(o);
+      const n=mk('text',{x:W-R,y:18,'text-anchor':'end',class:'tk'}); n.textContent='more recent →'; svg.appendChild(n);
+      const Y={dna:58,fossil:112,move:166};
+      ORDER.forEach(k=>{svg.appendChild(mk('line',{x1:L,x2:W-R,y1:Y[k],y2:Y[k],class:'ax'})); const t=mk('text',{x:8,y:Y[k]+4,class:'rl '+CAT[k].cls}); t.style.stroke='none'; t.textContent=CAT[k].label; svg.appendChild(t);});
+      EV.forEach((e,i)=>{const s=spans(e); if(!s) return; const y=Y[e[2]]+((count[e[2]]++%3)-1)*9;
+        addPoint(svg,i,e,{cx:x(s.mid),cy:y,r:6,hit:12,bar:s.rhi>s.rlo?{x1:x(s.rhi),x2:x(s.rlo),y1:y,y2:y}:null},CAT[e[2]].cls);});
+      tip.textContent='Hover over or tap a point. The scale is logarithmic: each gridline is ten times older than the one to its right. Bars show the published range.';
+    } else {
+      const W=360,H=620,T=34,B=16,L=86, colW=(W-L-8)/3, y=a=>T+(lg(maxA)-lg(a))/(lg(maxA)-lg(minA))*(H-T-B);
+      svg.setAttribute('viewBox',`0 0 ${W} ${H}`); svg.classList.add('tall');
+      TICKS.forEach(([a,l])=>{svg.appendChild(mk('line',{x1:L-4,x2:W-4,y1:y(a),y2:y(a),class:'ax','stroke-dasharray':'3 4'})); const t=mk('text',{x:L-8,y:y(a)+4,'text-anchor':'end',class:'tk'}); t.textContent=l; svg.appendChild(t);});
+      const o=mk('text',{x:4,y:T-14,class:'tk'}); o.textContent='↑ older'; svg.appendChild(o);
+      const n=mk('text',{x:4,y:H-2,class:'tk'}); n.textContent='↓ more recent'; svg.appendChild(n);
+      const X={}; ORDER.forEach((k,j)=>{X[k]=L+colW*(j+.5); svg.appendChild(mk('line',{x1:X[k],x2:X[k],y1:T,y2:H-B,class:'ax'})); const t=mk('text',{x:X[k],y:T-14,'text-anchor':'middle',class:'rl '+CAT[k].cls}); t.style.stroke='none'; t.textContent=CAT[k].label; svg.appendChild(t);});
+      EV.forEach((e,i)=>{const s=spans(e); if(!s) return; const x=X[e[2]]+((count[e[2]]++%3)-1)*16;
+        addPoint(svg,i,e,{cx:x,cy:y(s.mid),r:7,hit:15,bar:s.rhi>s.rlo?{x1:x,x2:x,y1:y(s.rhi),y2:y(s.rlo)}:null},CAT[e[2]].cls);});
+      tip.textContent='Tap a point to read about it. Older events are at the top; each gridline is ten times older than the one below it. Bars show the published range.';
+    }
+    sc.appendChild(svg); show(current);
+  }
+  build();
+  let rt; window.addEventListener('resize',()=>{clearTimeout(rt); rt=setTimeout(build,150);});
 }
 
 /* ---------- 3. Coat genetics calculator ---------- */
@@ -279,6 +326,17 @@ if(brHost){
   fillParents();
 }
 
+/* ---------- phone helpers: table labels and nav that follows you ---------- */
+document.querySelectorAll('.tbl table').forEach(tb=>{
+  const heads=[...tb.querySelectorAll('thead th')].map(th=>th.textContent.trim());
+  tb.querySelectorAll('tbody tr').forEach(tr=>[...tr.children].forEach((td,i)=>{ if(heads[i]) td.setAttribute('data-label',heads[i]); }));
+});
+const navUl=document.querySelector('nav.tracks ul');
+if(navUl){
+  const keepVisible=()=>{ const a=navUl.querySelector('a.on'); if(!a) return; const l=a.offsetLeft, r=l+a.offsetWidth;
+    if(l<navUl.scrollLeft+8 || r>navUl.scrollLeft+navUl.clientWidth-48) navUl.scrollTo({left:Math.max(0,l-16),behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}); };
+  new MutationObserver(keepVisible).observe(navUl,{subtree:true,attributes:true,attributeFilter:['class']});
+}
 /* ---------- 4. Quiz ---------- */
 const QUIZ=[
  ['How many chromosomes do lions and tigers have?',['36','38','44','46'],1,'Panthera has 2n = 38, the same layout as the house cat. Only the ocelot lineage differs, with 36.'],

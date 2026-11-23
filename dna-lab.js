@@ -69,7 +69,19 @@ button.b:hover{filter:brightness(1.08);transform:translateY(-1px)}
 .sim .stats div{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
 .sim .stats small{display:block;font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .sim .stats b{font-family:var(--display);font-size:1.3rem;font-variant-numeric:tabular-nums}
-@media (max-width:820px){.ladder{grid-template-columns:repeat(2,minmax(0,1fr))}.ladder-out,.sim,.sliders{grid-template-columns:1fr}.sim .stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:820px){
+  .ladder{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent)}
+  .ladder button{flex:0 0 40%;scroll-snap-align:start;min-height:44px}
+  .ladder-out,.sim,.sliders{grid-template-columns:1fr}
+  .ladder-out svg{max-height:120px}
+  .sim .stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .sim .stats b{font-size:1.15rem}
+}
+@media (max-width:600px),(pointer:coarse){
+  .codon .trip button.b{width:2.05em;height:2.3em}
+  .lab input[type=range]{height:32px}
+  .lab .row label{font-size:.9rem}
+}
 `;
 const st=document.createElement('style'); st.textContent=css; document.head.appendChild(st);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -260,13 +272,19 @@ function sampleGen(){
   freq=counts.map(c=>c/copies); gen++; hist.push(H(freq));
   if(crashLeft>0){ crashLeft--; if(crashLeft===0){ N=preN; nIn.value=N; msg.textContent=`The population recovered to ${N} animals, but lost versions never come back. Only new mutations, over many thousands of years, can restore them.`; } }
 }
+function fit(cv,aspect){
+  // draw at the canvas's real on-screen size so text and dots stay sharp on phones
+  const dpr=window.devicePixelRatio||1, w=Math.max(200,Math.round(cv.clientWidth||cv.width)), h=Math.round(w*aspect);
+  if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){ cv.width=Math.round(w*dpr); cv.height=Math.round(h*dpr); }
+  const ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); return {ctx,w,h};
+}
 function draw(){
-  const ctx=dots.getContext('2d'), W=dots.width, Hh=dots.height; ctx.clearRect(0,0,W,Hh);
+  const {ctx,w:W,h:Hh}=fit(dots,2/3); ctx.clearRect(0,0,W,Hh);
   const show=Math.min(2*N,240), cols=Math.ceil(Math.sqrt(show*W/Hh)), rows=Math.ceil(show/cols), cw=W/cols, ch=Hh/rows, rad=Math.max(2,Math.min(cw,ch)*0.38);
   let idx=0; const counts=freq.map(p=>Math.round(p*show)); let diff=show-counts.reduce((a,b)=>a+b,0); if(diff) counts[counts.indexOf(Math.max(...counts))]+=diff;
   counts.forEach((c,k)=>{ for(let j=0;j<c;j++,idx++){ const x=(idx%cols+.5)*cw, y=(Math.floor(idx/cols)+.5)*ch; ctx.beginPath(); ctx.arc(x,y,rad,0,Math.PI*2); ctx.fillStyle=COLORS[k]; ctx.fill(); } });
   const cs=getComputedStyle(host), fg=cs.getPropertyValue('--fg').trim()||'#222', mu=cs.getPropertyValue('--muted').trim()||'#888', am=cs.getPropertyValue('--amber').trim()||'#b60', ln=cs.getPropertyValue('--line').trim()||'#ccc';
-  const c2=chart.getContext('2d'), w=chart.width, h=chart.height, L=34, B=22, T=10, R=8; c2.clearRect(0,0,w,h);
+  const narrow=(chart.clientWidth||480)<420, F=fit(chart,narrow?0.6:0.42), c2=F.ctx, w=F.w, h=F.h, L=36, B=22, T=10, R=8; c2.clearRect(0,0,w,h);
   c2.strokeStyle=ln; c2.lineWidth=1; c2.font='11px monospace'; c2.fillStyle=mu;
   [0,.25,.5,.75,1].forEach(v=>{const y=T+(1-v)*(h-T-B); c2.beginPath(); c2.moveTo(L,y); c2.lineTo(w-R,y); c2.stroke(); c2.fillText(Math.round(v*100)+'%',2,y+4);});
   const maxG=Math.max(50,hist.length-1); c2.fillText('generation '+maxG,w-R-92,h-5); c2.fillText('0',L,h-5);
@@ -281,5 +299,7 @@ host.querySelector('#sim-crash').addEventListener('click',()=>{ preN=+nIn.value;
 host.querySelector('#sim-reset').addEventListener('click',reset);
 nIn.addEventListener('input',()=>{ N=+nIn.value; preN=N; crashLeft=0; draw(); });
 new MutationObserver(()=>draw()).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+let simRT; window.addEventListener('resize',()=>{clearTimeout(simRT); simRT=setTimeout(draw,150);});
+try{ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>draw()); }catch(e){}
 reset();
 })();
