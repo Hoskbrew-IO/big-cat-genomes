@@ -149,6 +149,7 @@ footer{padding-block:3rem 4rem; color:var(--muted); font-size:.92rem; border-top
 
 <nav class="tracks" aria-label="Sections">
   <ul>
+    <li><a href="#species">Species</a></li>
     <li><a href="#origins">Origins</a></li>
     <li><a href="#tree-sec">Family tree</a></li>
     <li><a href="#genomes">Genomes</a></li>
@@ -157,11 +158,23 @@ footer{padding-block:3rem 4rem; color:var(--muted); font-size:.92rem; border-top
     <li><a href="#ancient">Ancient DNA</a></li>
     <li><a href="#conservation">Conservation</a></li>
     <li><a href="#open">Open questions</a></li>
+    <li><a href="#quiz">Quiz</a></li>
     <li><a href="#refs">Sources</a></li>
   </ul>
 </nav>
 
 <main class="wrap">
+
+<!-- SPECIES -->
+<section id="species">
+  <div class="band" aria-hidden="true"></div>
+  <div class="sec-head">
+    <p class="eyebrow">Explore</p>
+    <h2>Meet the cats</h2>
+    <p class="prose">Pick a cat to see its genome, conservation status, closest relative and the DNA findings covered on this page. You can also click a name on the family tree.</p>
+  </div>
+  <div id="ix-species"></div>
+</section>
 
 <!-- ORIGINS -->
 <section id="origins">
@@ -172,6 +185,7 @@ footer{padding-block:3rem 4rem; color:var(--muted); font-size:.92rem; border-top
     <p class="prose">The cat family dates to the Oligocene. The oldest accepted felid, <i>Proailurus</i>, lived in Europe 25–31 million years ago. But every living cat descends from a much younger ancestor. A 2006 study using 22,789 base pairs of DNA and 16 fossil calibrations put the base of modern cats at about 10.8 million years ago, probably in Asia. The Panthera lineage was the first to branch off. Rising and falling sea levels then let cats cross between continents at least 10 times.</p>
   </div>
 
+  <div id="ix-deeptime"></div>
   <div class="tl-filter" role="group" aria-label="Filter timeline">
     <button class="chip" id="f-all" aria-pressed="true" data-k="all">All events</button>
     <button class="chip" id="f-dna" aria-pressed="false" data-k="dna">DNA estimates</button>
@@ -355,6 +369,7 @@ footer{padding-block:3rem 4rem; color:var(--muted); font-size:.92rem; border-top
       <p class="src">Weissengruber 2002 J Anat · Klemuk 2011 PLoS ONE</p>
     </div>
   </div>
+  <div id="ix-breeder"></div>
 </section>
 
 <!-- ANCIENT -->
@@ -444,6 +459,17 @@ footer{padding-block:3rem 4rem; color:var(--muted); font-size:.92rem; border-top
     <div class="card"><h3>Why are ligers so big?</h3><p>Genomic imprinting is the leading explanation, but it has never been tested in big cats.</p></div>
     <div class="card"><h3>What genes make a roar?</h3><p>None are known. Roaring is explained only by the anatomy of the larynx and vocal folds.</p></div>
   </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz">
+  <div class="band" aria-hidden="true"></div>
+  <div class="sec-head">
+    <p class="eyebrow">Test yourself</p>
+    <h2>Eight questions</h2>
+    <p class="prose">Every answer comes from the chapters above.</p>
+  </div>
+  <div id="ix-quiz"></div>
 </section>
 
 <!-- REFS -->
@@ -624,6 +650,7 @@ if('IntersectionObserver' in window){
 }
 </script>
 
+<script src="interactive.js"></script>
 </body>
 </html>
 
